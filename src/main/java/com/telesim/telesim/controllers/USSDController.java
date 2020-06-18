@@ -21,11 +21,11 @@ public class USSDController {
 
         switch (inputString){
             case "":
-                response = "CON Welcome to Telesim Solutions. \n" +
-                            "1. Register for service. \n" +
-                            "2. Login into service. \n" +
-                            "3. More Information and support";
-                            break;
+                response = "CON Welcome to Telesim Solutions";
+//                            "1. Register for service. \n" +
+//                            "2. Login into service. \n" +
+//                            "3. More Information and support";
+                break;
             case "1":
                 response = "CON Register for Telesim Solutions \n" +
                         "Enter your occupation: (nurse)";
@@ -51,6 +51,7 @@ public class USSDController {
 //        Return a response per action
         var headers = new HttpHeaders();
         headers.add("content-type", "text/plain");
+        headers.add("charset", "utf-8");
         return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(response);
     }
 }
