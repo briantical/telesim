@@ -3,8 +3,12 @@ package com.telesim.telesim.controllers;
 import com.telesim.telesim.models.USSDRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -14,17 +18,19 @@ public class USSDController {
         return "Welcome to Telesim Solutions USSD Api";
     }
 
-    @PostMapping(value = "/ussd")
-    public ResponseEntity<String> doPost(@RequestBody USSDRequest ussdpost){
-        String inputString = ussdpost.get_text();
+    @PostMapping("/ussd")
+    public ResponseEntity<String> doPost(@RequestParam MultiValueMap ussdpost){
+        String inputString = (String) ussdpost.getFirst("text");
+        inputString = inputString == null ? "" : inputString;
         String response;
+        System.out.println(inputString);
 
         switch (inputString){
             case "":
-                response = "CON Welcome to Telesim Solutions";
-//                            "1. Register for service. \n" +
-//                            "2. Login into service. \n" +
-//                            "3. More Information and support";
+                response = "CON Welcome to Telesim Solutions\n" +
+                            "1. Register for service. \n" +
+                            "2. Login into service. \n" +
+                            "3. More Information and support";
                 break;
             case "1":
                 response = "CON Register for Telesim Solutions \n" +
