@@ -1,14 +1,10 @@
 package com.telesim.telesim.controllers;
 
-import com.telesim.telesim.models.USSDRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -23,7 +19,6 @@ public class USSDController {
         String inputString = (String) ussdpost.getFirst("text");
         inputString = inputString == null ? "" : inputString;
         String response;
-        System.out.println(inputString);
 
         switch (inputString){
             case "":
