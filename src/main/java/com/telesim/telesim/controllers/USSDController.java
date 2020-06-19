@@ -14,7 +14,7 @@ public class USSDController {
         return "Welcome to Telesim Solutions USSD Api";
     }
 
-    @PostMapping("/ussd/")
+    @PostMapping(value = "/ussd")
     public ResponseEntity<String> doPost(@RequestBody USSDRequest ussdpost){
         String inputString = ussdpost.get_text();
         String response;
