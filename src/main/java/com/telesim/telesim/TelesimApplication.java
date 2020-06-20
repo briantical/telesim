@@ -8,4 +8,5 @@ public class TelesimApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TelesimApplication.class, args);
 	}
+
 }
