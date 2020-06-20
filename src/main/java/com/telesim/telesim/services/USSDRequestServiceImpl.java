@@ -22,18 +22,18 @@ public class USSDRequestServiceImpl implements USSDRequestService {
     private final StateMachineFactory<USSDStates, USSDEvents> stateMachineFactory;
     private final USSDStateChangeListener ussdStateChangeListener;
 
-    @Transactional
-    @Override
-    public StateMachine<USSDStates, USSDEvents> authorize(Long ussd_id) {
-        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
-        sendEvent(ussd_id, sm, USSDEvents.AUTH_APPROVE);
-        return sm;
-    }
-
     @Override
     public USSDRequest newUSSDRequest(USSDRequest ussdRequest) {
         ussdRequest.setUssdstate(USSDStates.NEW);
         return ussdRequestRepository.save(ussdRequest);
+    }
+
+    @Transactional
+    @Override
+    public StateMachine<USSDStates, USSDEvents> authorize(Long ussd_id) {
+        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
+        sendEvent(ussd_id, sm, USSDEvents.AUTHORIZE);
+        return sm;
     }
 
     @Transactional

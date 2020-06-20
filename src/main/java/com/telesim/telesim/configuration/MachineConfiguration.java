@@ -27,15 +27,7 @@ public class MachineConfiguration extends EnumStateMachineConfigurerAdapter<USSD
     private final Action<USSDStates, USSDEvents> cancelAction = new CancelAction();
     private final Action<USSDStates, USSDEvents> completeAction = new CompleteAction();
     private final Action<USSDStates, USSDEvents> processAction = new ProcessAction();
-
-    private final Action<USSDStates, USSDEvents> preAuthAction = new PreAuthAction();
-    private final Action<USSDStates, USSDEvents> authAction = new AuthAction();
     private final Guard<USSDStates, USSDEvents> ussdIdGuard = new USSDIdGuard();
-    private final Action<USSDStates, USSDEvents> preAuthApprovedAction = new PreAuthApprovedAction();
-    private final Action<USSDStates, USSDEvents> preAuthDeclinedAction = new PreAuthDeclinedAction();
-    private final Action<USSDStates, USSDEvents> authApprovedAction = new AuthApprovedAction();
-    private final Action<USSDStates, USSDEvents> authDeclinedAction = new AuthDeclinedAction();
-
 
     @Override
     public void configure(StateMachineStateConfigurer<USSDStates, USSDEvents> states) throws Exception {
@@ -43,10 +35,7 @@ public class MachineConfiguration extends EnumStateMachineConfigurerAdapter<USSD
                 .initial(USSDStates.NEW)
                 .states(EnumSet.allOf(USSDStates.class))
                 .end(USSDStates.CANCELLED)
-                .end(USSDStates.COMPLETED)
-                .end(USSDStates.AUTH)
-                .end(USSDStates.PRE_AUTH_ERROR)
-                .end(USSDStates.AUTH_ERROR);
+                .end(USSDStates.COMPLETED);
     }
 
     @Override
@@ -81,45 +70,7 @@ public class MachineConfiguration extends EnumStateMachineConfigurerAdapter<USSD
                     .source(USSDStates.PROCESSING)
                     .target(USSDStates.COMPLETED)
                     .event(USSDEvents.COMPLETE)
-                    .action(completeAction)
-                    .and()
-
-
-                .withExternal()
-                    .source(USSDStates.NEW)
-                    .target(USSDStates.NEW)
-                    .event(USSDEvents.PRE_AUTHORIZE)
-                    .action(preAuthAction)
-                    .guard(ussdIdGuard)
-                    .and()
-                .withExternal()
-                    .source(USSDStates.NEW)
-                    .target(USSDStates.PRE_AUTH)
-                    .event(USSDEvents.PRE_AUTH_APPROVE)
-                    .action(preAuthApprovedAction)
-                    .and()
-                .withExternal()
-                    .source(USSDStates.NEW)
-                    .target(USSDStates.PRE_AUTH_ERROR)
-                    .event(USSDEvents.PRE_AUTH_DECLINE)
-                    .action(preAuthDeclinedAction)
-                    .and()
-                .withExternal()
-                    .source(USSDStates.PRE_AUTH)
-                    .target(USSDStates.PRE_AUTH)
-                    .event(USSDEvents.AUTHORIZE)
-                    .action(authAction)
-                    .and()
-                .withExternal()
-                    .source(USSDStates.PRE_AUTH)
-                    .target(USSDStates.AUTH)
-                    .event(USSDEvents.AUTH_APPROVE)
-                    .action(authApprovedAction)
-                    .and()
-                .withExternal().source(USSDStates.PRE_AUTH)
-                    .target(USSDStates.AUTH_ERROR)
-                    .event(USSDEvents.AUTH_DECLINE)
-                    .action(authDeclinedAction);
+                    .action(completeAction);
     }
 
     @Override

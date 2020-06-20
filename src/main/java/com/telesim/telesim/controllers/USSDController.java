@@ -13,7 +13,6 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.RegEx;
 import java.util.regex.Pattern;
 
 @RestController
@@ -46,24 +45,14 @@ public class USSDController {
                 .serviceCode(serviceCode)
                 .build();
 
-        System.out.println("Service Code :" + serviceCode);
-
-        USSDRequest savedUSSDRequest = ussdRequestService.newUSSDRequest(ussdRequest);
-        System.out.println("Should be NEW");
-        System.out.println(savedUSSDRequest.getUssdstate());
-
-        StateMachine<USSDStates, USSDEvents> sm = ussdRequestService.preAuth(savedUSSDRequest.getId());
-        USSDRequest preAuthedUSSD = ussdRequestRepository.getOne(savedUSSDRequest.getId());
-
-        System.out.println("Should be PRE_AUTH or PRE_AUTH_ERROR");
-        System.out.println(sm.getState().getId());
-
-        System.out.println(preAuthedUSSD);
-        @RegEx
         String chwCode = "^\\d{5}$";
         boolean matches = Pattern.matches(chwCode, text);
 
+        USSDRequest savedUSSDRequest = ussdRequestService.newUSSDRequest(ussdRequest);
+        System.out.println("NEW " + savedUSSDRequest.getUssdstate());
+
         String response;
+        text = text != null ? text : "";
         switch (text){
             case "":
                 response = "CON Welcome to Telesim Solutions\n" +
@@ -74,12 +63,18 @@ public class USSDController {
             case "1":
                 response = "END Register for Telesim Solutions \n" +
                            "Visit telesimsolutions.com to register";
+                StateMachine<USSDStates, USSDEvents> sm_complete = ussdRequestService.complete(savedUSSDRequest.getId());
+                System.out.println("COMPLETE " + sm_complete.getState().getId());
                 break;
             case "2":
                 response = "CON Enter your CHW Code: ";
+                StateMachine<USSDStates, USSDEvents> sm_authorized = ussdRequestService.authorize(savedUSSDRequest.getId());
+                System.out.println("AUTHORIZE" + sm_authorized.getState().getId());
                 break;
             case "3":
                 response = "END Visit telesimsolutions.com for support";
+                StateMachine<USSDStates, USSDEvents> sm_complete_1 = ussdRequestService.complete(savedUSSDRequest.getId());
+                System.out.println("SECOND COMPLETE" + sm_complete_1.getState().getId());
                 break;
             case "12345":
                 response = "CON Welcome back, Brian Ivan\n" +
@@ -88,9 +83,13 @@ public class USSDController {
                             "2. COVID-19 SOPs \n" +
                             "3. Cerebral Malaria \n" +
                             "4. Malnutrition with Kids";
+                StateMachine<USSDStates, USSDEvents> sm_process = ussdRequestService.process(savedUSSDRequest.getId());
+                System.out.println("PROCESS" + sm_process.getState().getId());
                 break;
             default:
                 response = "END Invalid input";
+                    StateMachine<USSDStates, USSDEvents> sm_cancel = ussdRequestService.cancel(savedUSSDRequest.getId());
+                    System.out.println("CANCEL" + sm_cancel.getState().getId());
         }
         return responder(response);
     }
