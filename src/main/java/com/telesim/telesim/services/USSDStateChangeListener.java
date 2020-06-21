@@ -22,9 +22,9 @@ public class USSDStateChangeListener extends StateMachineInterceptorAdapter<USSD
     @Override
     public void preStateChange(State<USSDStates, USSDEvents> state, Message<USSDEvents> message, Transition<USSDStates, USSDEvents> transition, StateMachine<USSDStates, USSDEvents> stateMachine) {
         Optional.ofNullable(message).ifPresent(msg -> {
-            Optional.ofNullable(Long.class.cast(msg.getHeaders().getOrDefault(USSDRequestServiceImpl.USSD_ID_HEADER, -1L)))
-                    .ifPresent(paymentId -> {
-                        USSDRequest ussdRequest = ussdRequestRepository.getOne(paymentId);
+            Optional.ofNullable(String.class.cast(msg.getHeaders().getOrDefault(USSDRequestServiceImpl.SESSIONID_HEADER, "")))
+                    .ifPresent(sessionId -> {
+                        USSDRequest ussdRequest = ussdRequestRepository.findBySessionId(sessionId).get(0);
                         ussdRequest.setUssdstate(state.getId());
                         ussdRequestRepository.save(ussdRequest);
                     });

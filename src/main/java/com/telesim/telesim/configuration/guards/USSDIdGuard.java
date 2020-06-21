@@ -10,6 +10,6 @@ public class USSDIdGuard implements Guard<USSDStates, USSDEvents> {
 
     @Override
     public boolean evaluate(StateContext<USSDStates, USSDEvents> context) {
-        return context.getMessageHeader(USSDRequestServiceImpl.USSD_ID_HEADER) != null;
+        return context.getMessageHeader(USSDRequestServiceImpl.SESSIONID_HEADER) != null;
     }
 }

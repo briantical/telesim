@@ -12,7 +12,7 @@ public class AuthorizeAction implements Action<USSDStates, USSDEvents> {
     public void execute(StateContext<USSDStates, USSDEvents> context) {
         System.out.println("AUTHORIZING ...");
         context.getStateMachine().sendEvent(MessageBuilder.withPayload(USSDEvents.AUTHORIZE)
-                .setHeader(USSDRequestServiceImpl.USSD_ID_HEADER, context.getMessageHeader(USSDRequestServiceImpl.USSD_ID_HEADER))
+                .setHeader(USSDRequestServiceImpl.SESSIONID_HEADER, context.getMessageHeader(USSDRequestServiceImpl.SESSIONID_HEADER))
                 .build());
     }
 }

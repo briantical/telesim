@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class USSDRequestServiceImpl implements USSDRequestService {
-    public static final String USSD_ID_HEADER = "ussd_id";
+    public static final String SESSIONID_HEADER = "sessionId";
 
     private final USSDRequestRepository ussdRequestRepository;
     private final StateMachineFactory<USSDStates, USSDEvents> stateMachineFactory;
@@ -30,46 +30,46 @@ public class USSDRequestServiceImpl implements USSDRequestService {
 
     @Transactional
     @Override
-    public StateMachine<USSDStates, USSDEvents> authorize(Long ussd_id) {
-        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
-        sendEvent(ussd_id, sm, USSDEvents.AUTHORIZE);
+    public StateMachine<USSDStates, USSDEvents> authorize(String sessionId) {
+        StateMachine<USSDStates, USSDEvents> sm = build(sessionId);
+        sendEvent(sessionId, sm, USSDEvents.AUTHORIZE);
         return sm;
     }
 
     @Transactional
     @Override
-    public StateMachine<USSDStates, USSDEvents> cancel(Long ussd_id) {
-        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
-        sendEvent(ussd_id, sm, USSDEvents.CANCEL);
+    public StateMachine<USSDStates, USSDEvents> cancel(String sessionId) {
+        StateMachine<USSDStates, USSDEvents> sm = build(sessionId);
+        sendEvent(sessionId, sm, USSDEvents.CANCEL);
         return sm;
     }
 
     @Transactional
     @Override
-    public StateMachine<USSDStates, USSDEvents> complete(Long ussd_id) {
-        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
-        sendEvent(ussd_id, sm, USSDEvents.COMPLETE);
+    public StateMachine<USSDStates, USSDEvents> complete(String sessionId) {
+        StateMachine<USSDStates, USSDEvents> sm = build(sessionId);
+        sendEvent(sessionId, sm, USSDEvents.COMPLETE);
         return sm;
     }
 
     @Transactional
     @Override
-    public StateMachine<USSDStates, USSDEvents> process(Long ussd_id) {
-        StateMachine<USSDStates, USSDEvents> sm = build(ussd_id);
-        sendEvent(ussd_id, sm, USSDEvents.PROCESS);
+    public StateMachine<USSDStates, USSDEvents> process(String sessionId) {
+        StateMachine<USSDStates, USSDEvents> sm = build(sessionId);
+        sendEvent(sessionId, sm, USSDEvents.PROCESS);
         return sm;
     }
 
-    private void sendEvent(Long ussd_id, StateMachine<USSDStates, USSDEvents> sm, USSDEvents event){
+    private void sendEvent(String sessionId, StateMachine<USSDStates, USSDEvents> sm, USSDEvents event){
         Message<USSDEvents> msg = MessageBuilder.withPayload(event)
-                .setHeader(USSD_ID_HEADER, ussd_id)
+                .setHeader(SESSIONID_HEADER, sessionId)
                 .build();
 
         sm.sendEvent(msg);
     }
 
-    private StateMachine<USSDStates, USSDEvents> build (Long ussd_id){
-        USSDRequest ussdRequest = ussdRequestRepository.getOne(ussd_id);
+    private StateMachine<USSDStates, USSDEvents> build (String sessionId){
+        USSDRequest ussdRequest = ussdRequestRepository.findBySessionId(sessionId).get(0);
         StateMachine<USSDStates, USSDEvents> sm = stateMachineFactory.getStateMachine(Long.toString(ussdRequest.getId()));
         sm.stop();
         sm.getStateMachineAccessor()

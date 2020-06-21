@@ -45,11 +45,10 @@ public class USSDController {
                 .serviceCode(serviceCode)
                 .build();
 
-        String chwCode = "^\\d{5}$";
-        boolean matches = Pattern.matches(chwCode, text);
+//        String chwCode = "^\\d{5}$";
+//        boolean matches = Pattern.matches(chwCode, text);
 
-        USSDRequest savedUSSDRequest = ussdRequestService.newUSSDRequest(ussdRequest);
-        System.out.println("NEW " + savedUSSDRequest.getUssdstate());
+
 
         String response;
         text = text != null ? text : "";
@@ -59,21 +58,23 @@ public class USSDController {
                             "1. Register for service. \n" +
                             "2. Login into service. \n" +
                             "3. More Information and support";
+                USSDRequest savedUSSDRequest = ussdRequestService.newUSSDRequest(ussdRequest);
+                System.out.println("NEW " + savedUSSDRequest.getUssdstate());
                 break;
             case "1":
                 response = "END Register for Telesim Solutions \n" +
                            "Visit telesimsolutions.com to register";
-                StateMachine<USSDStates, USSDEvents> sm_complete = ussdRequestService.complete(savedUSSDRequest.getId());
+                StateMachine<USSDStates, USSDEvents> sm_complete = ussdRequestService.complete(sessionId);
                 System.out.println("COMPLETE " + sm_complete.getState().getId());
                 break;
             case "2":
                 response = "CON Enter your CHW Code: ";
-                StateMachine<USSDStates, USSDEvents> sm_authorized = ussdRequestService.authorize(savedUSSDRequest.getId());
+                StateMachine<USSDStates, USSDEvents> sm_authorized = ussdRequestService.authorize(sessionId);
                 System.out.println("AUTHORIZE" + sm_authorized.getState().getId());
                 break;
             case "3":
                 response = "END Visit telesimsolutions.com for support";
-                StateMachine<USSDStates, USSDEvents> sm_complete_1 = ussdRequestService.complete(savedUSSDRequest.getId());
+                StateMachine<USSDStates, USSDEvents> sm_complete_1 = ussdRequestService.complete(sessionId);
                 System.out.println("SECOND COMPLETE" + sm_complete_1.getState().getId());
                 break;
             case "12345":
@@ -83,12 +84,12 @@ public class USSDController {
                             "2. COVID-19 SOPs \n" +
                             "3. Cerebral Malaria \n" +
                             "4. Malnutrition with Kids";
-                StateMachine<USSDStates, USSDEvents> sm_process = ussdRequestService.process(savedUSSDRequest.getId());
+                StateMachine<USSDStates, USSDEvents> sm_process = ussdRequestService.process(sessionId);
                 System.out.println("PROCESS" + sm_process.getState().getId());
                 break;
             default:
                 response = "END Invalid input";
-                    StateMachine<USSDStates, USSDEvents> sm_cancel = ussdRequestService.cancel(savedUSSDRequest.getId());
+                    StateMachine<USSDStates, USSDEvents> sm_cancel = ussdRequestService.cancel(sessionId);
                     System.out.println("CANCEL" + sm_cancel.getState().getId());
         }
         return responder(response);
